@@ -31,6 +31,12 @@ fi
 GIT_SHA="$1"
 EXPECTED="$2"
 
+if [[ ! "$GIT_SHA" =~ ^[0-9a-f]{7,40}$ ]]; then
+  echo "Error: <git-sha> must be a 7-40 character lowercase hex Git commit SHA (got: $GIT_SHA)." >&2
+  echo "Branch names, tags, and other refs are not accepted: build attestation requires an immutable commit." >&2
+  exit 2
+fi
+
 WORKDIR=$(mktemp -d)
 trap 'rm -rf "$WORKDIR"' EXIT
 
