@@ -7,12 +7,12 @@ Local SwiftPM package providing the on-device classification engine for Veto, an
 - `InboundMessage`, `Decision`, `AllowReason`, `Settings` value types (all `Sendable`).
 - `Detector` protocol and `DetectionResult` enum.
 - `Engine` — ordered detector chain with master kill-switch and confidence threshold.
+- `AllowedSenderDetector` — exact-string match against an immutable trusted-sender set; emits `.explicitAllow(.trustedSender)` to short-circuit the chain.
 
 The engine is pure Swift built on Foundation alone. It compiles for iOS 17+ and macOS 14+ and runs in the host app, the Message Filter Extension, and the test target without modification.
 
 ## Pending in later increments
 
-- `AllowedSenderDetector` (Increment 2)
 - `Pack` model + `SignatureDetector` (Increment 3)
 - `HistoryLog` append/compaction (Increment 4)
 - `AppGroupStore` + `BundleHasher` (Increment 5)
