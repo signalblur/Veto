@@ -20,6 +20,9 @@ let package = Package(
         .target(
             name: "VetoCore",
             path: "Sources/VetoCore",
+            resources: [
+                .copy("Packs"),
+            ],
             swiftSettings: [
                 .swiftLanguageMode(.v6),
             ]

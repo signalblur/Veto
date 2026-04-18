@@ -14,8 +14,22 @@ Local SwiftPM package providing the on-device classification engine for Veto, an
 - `HistoryLog` actor — append-only writer + reader + `compact(keepingMostRecent:)` + `markUndone(bodyHash:sender:)`. JSONL on disk; malformed lines are silently skipped on read; rewrites are atomic via `write(to:options:.atomic)`. No body text or fragments stored — only the precomputed `bodyHash`.
 - `AppGroupStore` actor — read/write for `settings.json`, `allowed-senders.json` (set semantics, sorted on disk), and the `packs/` directory. `loadSettings()` returns sane defaults on a fresh container; `loadPacks()` skips malformed JSON without crashing; `installPacks(from:)` does a clean replace of the packs directory.
 - `BundleHasher.canonicalHash(infoPlistURL:packURLs:modelDirectoryURL:)` — `sha256` over a deterministic concatenation of (Info.plist with `CFBundleSignature` stripped) + (pack JSONs sorted by filename) + (model directory files in lexicographic relative-path order). Robust to macOS `/private/var` symlink canonicalization. Returns `"sha256:" + 64 hex chars`. This is the value displayed on the device's About screen and the value the verify script reproduces from a fresh build at the tagged commit.
+- `BundledPacks` — exposes the four signature pack JSONs (`donations`, `gotv`, `surveys`, `advocacy`) shipped inside the package's resource bundle. Host app reads these via `BundledPacks.allURLs()` and copies them into the App Group container at first launch / version change.
 
 The engine is pure Swift built on Foundation alone (`CryptoKit` is the only additional Apple framework, used solely by `BundleHasher`). It compiles for iOS 17+ and macOS 14+ and runs in the host app, the Message Filter Extension, and the test target without modification.
+
+## Bundled signature packs
+
+The four packs target distinct categories with conservative thresholds. Each pack is independently toggleable in the host app's Settings, and `SignatureDetector` evaluates them in declaration order — the first pack to cross its `threshold` wins.
+
+| Pack | Threshold | Strongest rule |
+|---|---|---|
+| `donations` | 60 | `secure.actblue.com` URL or `winred.com` URL (weight 100, solo trigger) |
+| `gotv` | 80 | polling-place language + same-day temporal anchor (weight 80) |
+| `surveys` | 80 | "quick survey" + political context keyword (weight 80) |
+| `advocacy` | 60 | named-org list + money-ask verb + `$\d` (weight 60) |
+
+These are starting points. Real-world tuning will require a curated corpus PR. See `Tests/VetoCoreTests/CorpusTests.swift` for the labeled regression corpus — every entry is a synthetic, anonymized template (no real captured messages). Add new corpus entries before changing pack rules to lock in expected behavior.
 
 ## Pending in later increments
 

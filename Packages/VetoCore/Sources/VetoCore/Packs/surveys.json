@@ -1,0 +1,33 @@
+{
+  "id": "surveys",
+  "version": "2026.04.18",
+  "displayName": "Political Surveys",
+  "threshold": 80,
+  "rules": [
+    {
+      "id": "surveys.quick_poll_political",
+      "weight": 80,
+      "match": {"all": [
+        {"regex": "(?i)\\b(quick (poll|survey|question)|1-?question survey|one[- ]minute survey)\\b"},
+        {"regex": "(?i)\\b(election|candidate|campaign|primary|president|senator|congress)\\b"}
+      ]}
+    },
+    {
+      "id": "surveys.opinion_with_political_context",
+      "weight": 70,
+      "match": {"all": [
+        {"regex": "(?i)\\byour (voice|opinion|input) (matters|counts|needed)\\b"},
+        {"regex": "(?i)\\b(election|campaign|candidate|primary|debate|policy)\\b"}
+      ]}
+    },
+    {
+      "id": "surveys.campaign_research_optout",
+      "weight": 60,
+      "match": {"all": [
+        {"regex": "(?i)\\b(survey|poll|research)\\b"},
+        {"regex": "(?i)\\b(campaign|election|candidate)\\b"},
+        {"regex": "(?i)\\b(reply|text)\\s+stop\\b"}
+      ]}
+    }
+  ]
+}

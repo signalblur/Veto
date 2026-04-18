@@ -1,0 +1,41 @@
+{
+  "id": "gotv",
+  "version": "2026.04.18",
+  "displayName": "Get Out The Vote",
+  "threshold": 80,
+  "rules": [
+    {
+      "id": "gotv.polling_place_with_time",
+      "weight": 80,
+      "match": {"all": [
+        {"regex": "(?i)\\b(polls? close|polling (place|location|station)|vote by mail)\\b"},
+        {"regex": "(?i)\\b(today|tomorrow|tonight|election day)\\b"}
+      ]}
+    },
+    {
+      "id": "gotv.election_reminder_with_optout",
+      "weight": 60,
+      "match": {"all": [
+        {"regex": "(?i)\\b(election|primary|caucus|ballot|vote)\\b"},
+        {"regex": "(?i)\\b(today|tomorrow|tonight|by \\d|hours? left)\\b"},
+        {"regex": "(?i)\\b(reply|text)\\s+stop\\b"}
+      ]}
+    },
+    {
+      "id": "gotv.last_chance_to_vote",
+      "weight": 50,
+      "match": {"all": [
+        {"regex": "(?i)\\b(last chance|don['']t forget|reminder)\\b"},
+        {"regex": "(?i)\\bvote\\b"}
+      ]}
+    },
+    {
+      "id": "gotv.campaign_addressed_voter",
+      "weight": 50,
+      "match": {"all": [
+        {"regex": "(?i)\\b(campaign|committee|for (president|senate|congress|governor|mayor))\\b"},
+        {"regex": "(?i)\\b(turn out|cast your ballot|early voting|absentee|mail-in)\\b"}
+      ]}
+    }
+  ]
+}

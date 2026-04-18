@@ -1,0 +1,58 @@
+{
+  "id": "donations",
+  "version": "2026.04.18",
+  "displayName": "Political Donations",
+  "threshold": 60,
+  "rules": [
+    {
+      "id": "donations.actblue",
+      "weight": 100,
+      "match": {"regex": "secure\\.actblue\\.com"}
+    },
+    {
+      "id": "donations.winred",
+      "weight": 100,
+      "match": {"regex": "\\bwinred\\.com"}
+    },
+    {
+      "id": "donations.stop_optout_with_money_ask",
+      "weight": 80,
+      "match": {"all": [
+        {"regex": "(?i)\\b(reply|text)\\s+stop\\b"},
+        {"regex": "(?i)\\b(chip in|donate|contribute|pitch in|give)\\b"},
+        {"regex": "\\$\\d"}
+      ]}
+    },
+    {
+      "id": "donations.campaign_with_money_ask",
+      "weight": 60,
+      "match": {"all": [
+        {"regex": "(?i)\\b(campaign|PAC|elect|re-?elect|nominee|primary)\\b"},
+        {"regex": "(?i)\\b(chip in|donate|contribute|pitch in|give)\\b"},
+        {"regex": "\\$\\d"}
+      ]}
+    },
+    {
+      "id": "donations.urgency_with_money_ask",
+      "weight": 50,
+      "match": {"all": [
+        {"regex": "(?i)\\b(midnight|tonight|hours? left|deadline|expires?|last chance)\\b"},
+        {"regex": "(?i)\\b(chip in|donate|contribute|pitch in)\\b"},
+        {"regex": "\\$\\d"}
+      ]}
+    },
+    {
+      "id": "donations.donor_match_amplifier",
+      "weight": 50,
+      "match": {"all": [
+        {"regex": "(?i)\\b(matched|tripled|doubled|3x|2x|4x|5x)\\b"},
+        {"regex": "(?i)\\b(donation|contribution|chip in|donate)\\b"}
+      ]}
+    },
+    {
+      "id": "donations.fec_disclaimer",
+      "weight": 70,
+      "match": {"regex": "(?i)\\b(paid for by|authorized by)\\b.{0,80}\\b(committee|campaign|PAC|for (president|senate|congress|governor))\\b"}
+    }
+  ]
+}

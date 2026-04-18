@@ -1,0 +1,34 @@
+{
+  "id": "advocacy",
+  "version": "2026.04.18",
+  "displayName": "Political Advocacy Fundraising",
+  "threshold": 60,
+  "rules": [
+    {
+      "id": "advocacy.named_org_with_money_ask",
+      "weight": 60,
+      "match": {"all": [
+        {"regex": "\\b(ACLU|Sierra Club|Planned Parenthood|EFF|NRDC|MoveOn|HRC|League of (Conservation Voters|Women Voters)|Common Cause|Brennan Center|Center for American Progress|Heritage (Action|Foundation)|Americans for Prosperity|Club for Growth|NRA-?ILA|Susan B\\. Anthony List|Federation for American Immigration Reform)\\b"},
+        {"regex": "(?i)\\b(donate|contribute|chip in|give|support)\\b"},
+        {"regex": "\\$\\d"}
+      ]}
+    },
+    {
+      "id": "advocacy.donor_match_political_themes",
+      "weight": 70,
+      "match": {"all": [
+        {"regex": "(?i)\\byour (donation|contribution|gift).{0,80}(matched|tripled|doubled)\\b"},
+        {"regex": "(?i)\\b(election|campaign|democracy|Trump|Biden|Republicans?|Democrats?|conservative|progressive|civil rights|gun rights|abortion|climate|immigration|Supreme Court|SCOTUS)\\b"}
+      ]}
+    },
+    {
+      "id": "advocacy.stand_with_money_ask",
+      "weight": 50,
+      "match": {"all": [
+        {"regex": "(?i)\\bstand (with|against|for)\\b"},
+        {"regex": "(?i)\\b(donate|contribute|chip in|give)\\b"},
+        {"regex": "\\$\\d"}
+      ]}
+    }
+  ]
+}
