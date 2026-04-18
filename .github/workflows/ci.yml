@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  vetocore-tests:
+    name: VetoCore (swift test)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Run VetoCore tests
+        working-directory: Packages/VetoCore
+        run: swift test --parallel
+
+  privacy-grep:
+    name: Privacy invariants (no network / no logging / no contacts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: No URLSession or Network framework anywhere in source
+        run: |
+          ! grep -rE "URLSession|import Network|NSURLConnection|CFNetwork" \
+            VetoFilterExtension/ Packages/VetoCore/Sources/
+
+      - name: No print, os_log, Logger, or NSLog anywhere in source
+        run: |
+          ! grep -rE "\bprint\(|\bos_log\b|\bLogger\.|\bNSLog\b|\bOSLog\b" \
+            Veto/ VetoFilterExtension/ Packages/VetoCore/Sources/
+
+      - name: No Contacts permission or API anywhere
+        run: |
+          ! grep -rE "NSContactsUsageDescription|CNContactStore|import Contacts" \
+            Veto/ VetoFilterExtension/ Packages/VetoCore/
+
+      - name: No forbidden message-store paths anywhere
+        run: |
+          ! grep -rE "Library/Messages|MobileSMS|chat\.db|NSHomeDirectory|com\.apple\.MobileSMS" \
+            Veto/ VetoFilterExtension/ Packages/VetoCore/Sources/ Packages/VetoCore/Tests/
+
+      - name: No IDMessageFilterExtensionNetworkURL key declared
+        run: |
+          ! grep -rE "IDMessageFilterExtensionNetworkURL" \
+            VetoFilterExtension/ project.yml

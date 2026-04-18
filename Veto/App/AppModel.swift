@@ -138,13 +138,12 @@ final class AppModel {
     }
 
     private func computeAttestationHashes() async {
-        guard let infoPlistURL = Bundle.main.url(forResource: "Info", withExtension: "plist") else { return }
         let packURLs = BundledPacks.allURLs()
         let modelURL = Bundle.main.url(forResource: "VetoClassifier", withExtension: "mlmodelc")
-        if let hash = try? BundleHasher.canonicalHash(infoPlistURL: infoPlistURL, packURLs: packURLs, modelDirectoryURL: modelURL) {
+        if let hash = try? BundleHasher.canonicalHash(packURLs: packURLs, modelDirectoryURL: modelURL) {
             bundleHash = hash
         }
-        if let modelURL, let hash = try? BundleHasher.canonicalHash(infoPlistURL: infoPlistURL, packURLs: [], modelDirectoryURL: modelURL) {
+        if let modelURL, let hash = try? BundleHasher.canonicalHash(modelDirectoryURL: modelURL) {
             modelHash = hash
         }
     }

@@ -2,12 +2,18 @@ import Foundation
 import CryptoKit
 
 public enum BundleHasher {
-    public static func canonicalHash(infoPlistURL: URL, packURLs: [URL], modelDirectoryURL: URL?) throws -> String {
+    public static func canonicalHash(
+        infoPlistURL: URL? = nil,
+        packURLs: [URL] = [],
+        modelDirectoryURL: URL? = nil
+    ) throws -> String {
         var hasher = SHA256()
 
-        let plistData = try Data(contentsOf: infoPlistURL)
-        let stripped = try stripSigningKeys(from: plistData)
-        hasher.update(data: stripped)
+        if let infoPlistURL {
+            let plistData = try Data(contentsOf: infoPlistURL)
+            let stripped = try stripSigningKeys(from: plistData)
+            hasher.update(data: stripped)
+        }
 
         let sortedPacks = packURLs.sorted { $0.lastPathComponent < $1.lastPathComponent }
         for url in sortedPacks {

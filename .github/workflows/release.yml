@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  reproducible-build:
+    name: Reproducible build and publish
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Pin Xcode 16.0
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run VetoCore tests
+        working-directory: Packages/VetoCore
+        run: swift test --parallel
+
+      - name: Build deterministically and verify reproducibility
+        run: scripts/test-bundle-hash.sh
+
+      - name: Compute bundle hash
+        id: hashes
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          APP_PATH="build/Veto.xcarchive/Products/Applications/Veto.app"
+          BUNDLE_HASH=$(scripts/bundle-hash.sh "$APP_PATH")
+          echo "bundle_hash=$BUNDLE_HASH" >> "$GITHUB_OUTPUT"
+          echo "$BUNDLE_HASH" > bundle-hash.txt
+          {
+            echo "## Veto release artifacts"
+            echo
+            echo "| Resource | Hash |"
+            echo "|----------|------|"
+            echo "| Bundle (packs + .mlmodelc) | \`$BUNDLE_HASH\` |"
+            echo
+            echo "Verify on a device by comparing this value to the one shown on the About screen."
+            echo
+            echo "End-to-end verifier:"
+            echo
+            echo '```'
+            echo "scripts/verify-build.sh $COMMIT_SHA $BUNDLE_HASH"
+            echo '```'
+          } > release-notes.md
+
+      - name: Zip the unsigned archive
+        run: cd build && zip -qr Veto.xcarchive.zip Veto.xcarchive
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/Veto.xcarchive.zip
+            bundle-hash.txt
+          body_path: release-notes.md
+          fail_on_unmatched_files: true
