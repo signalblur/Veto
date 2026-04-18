@@ -9,7 +9,7 @@ import FoundationModels
 actor ExtensionRuntime {
     static let shared = ExtensionRuntime()
 
-    private static let appGroupIdentifier = "group.com.liesabove.veto"
+    private static let appGroupIdentifier = "group.com.magoniaresearch.veto"
 
     private let containerURL: URL?
     private var loaded: LoadedState?

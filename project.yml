@@ -1,6 +1,6 @@
 name: Veto
 options:
-  bundleIdPrefix: com.liesabove.veto
+  bundleIdPrefix: com.magoniaresearch.veto
   deploymentTarget:
     iOS: "17.0"
   developmentLanguage: en
@@ -52,10 +52,10 @@ targets:
       path: Veto/Veto.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.liesabove.veto
+          - group.com.magoniaresearch.veto
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.liesabove.veto
+        PRODUCT_BUNDLE_IDENTIFIER: com.magoniaresearch.veto
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_ENTITLEMENTS: Veto/Veto.entitlements
@@ -92,10 +92,10 @@ targets:
       properties:
         com.apple.developer.IdentityLookup.message-filter: true
         com.apple.security.application-groups:
-          - group.com.liesabove.veto
+          - group.com.magoniaresearch.veto
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.liesabove.veto.filter
+        PRODUCT_BUNDLE_IDENTIFIER: com.magoniaresearch.veto.filter
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
         CODE_SIGN_ENTITLEMENTS: VetoFilterExtension/VetoFilterExtension.entitlements

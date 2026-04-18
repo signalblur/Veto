@@ -5,7 +5,7 @@ import VetoCore
 @MainActor
 @Observable
 final class AppModel {
-    static let appGroupIdentifier = "group.com.liesabove.veto"
+    static let appGroupIdentifier = "group.com.magoniaresearch.veto"
 
     let containerURL: URL?
     private let store: AppGroupStore?
