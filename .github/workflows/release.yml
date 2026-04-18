@@ -5,15 +5,29 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
+# Empty top-level — every job declares its own minimal scope.
+permissions: {}
+
+# Don't cancel an in-flight release; let it finish.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   reproducible-build:
     name: Reproducible build and publish
     runs-on: macos-15
+    timeout-minutes: 60
+    permissions:
+      contents: write       # publish a GitHub Release
+      id-token: write       # OIDC token for SLSA provenance
+      attestations: write   # store the attestation
     steps:
-      - uses: actions/checkout@v4
+      - uses: step-security/harden-runner@6c3c2f2c1c457b00c10c4848d6f5491db3b629df  # v2.18.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -64,8 +78,18 @@ jobs:
       - name: Zip the unsigned archive
         run: cd build && zip -qr Veto.xcarchive.zip Veto.xcarchive
 
+      - name: Generate SLSA build provenance for the archive
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45  # v2
+        with:
+          subject-path: build/Veto.xcarchive.zip
+
+      - name: Generate SLSA build provenance for the bundle hash file
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45  # v2
+        with:
+          subject-path: bundle-hash.txt
+
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.0.x
         with:
           files: |
             build/Veto.xcarchive.zip

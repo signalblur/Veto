@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # Keep GitHub Actions pinned-SHAs current. Dependabot resolves new SHAs from
+  # upstream tags and opens PRs that update the pinned commit + version comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    # 7-day cooldown reduces exposure to compromise windows like the
+    # tj-actions/changed-files (CVE-2025-30066, March 2025) and the
+    # aquasecurity/trivy-action tag-poisoning (CVE-2026-33634, March 2026)
+    # incidents — both were detected and remediated within hours.
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(actions)"
+      include: scope
