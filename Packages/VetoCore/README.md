@@ -12,12 +12,13 @@ Local SwiftPM package providing the on-device classification engine for Veto, an
 - `SignatureDetector` — sums weights of matching rules per pack; emits `.match(ruleId, confidence: 1.0)` when a pack's score crosses its `threshold`. The highest-weight matching rule provides the reported `ruleId`. Compiles regexes once at construction; `PackLoadError` reports invalid regex / duplicate rule id / empty pack with rule-id context.
 - `HistoryEntry` / `HistoryAction` Codable types with the JSONL line schema documented in the plan (`{"ts","sender","action","ruleId","allowReason","bodyHash","undone"}`).
 - `HistoryLog` actor — append-only writer + reader + `compact(keepingMostRecent:)` + `markUndone(bodyHash:sender:)`. JSONL on disk; malformed lines are silently skipped on read; rewrites are atomic via `write(to:options:.atomic)`. No body text or fragments stored — only the precomputed `bodyHash`.
+- `AppGroupStore` actor — read/write for `settings.json`, `allowed-senders.json` (set semantics, sorted on disk), and the `packs/` directory. `loadSettings()` returns sane defaults on a fresh container; `loadPacks()` skips malformed JSON without crashing; `installPacks(from:)` does a clean replace of the packs directory.
+- `BundleHasher.canonicalHash(infoPlistURL:packURLs:modelDirectoryURL:)` — `sha256` over a deterministic concatenation of (Info.plist with `CFBundleSignature` stripped) + (pack JSONs sorted by filename) + (model directory files in lexicographic relative-path order). Robust to macOS `/private/var` symlink canonicalization. Returns `"sha256:" + 64 hex chars`. This is the value displayed on the device's About screen and the value the verify script reproduces from a fresh build at the tagged commit.
 
-The engine is pure Swift built on Foundation alone. It compiles for iOS 17+ and macOS 14+ and runs in the host app, the Message Filter Extension, and the test target without modification.
+The engine is pure Swift built on Foundation alone (`CryptoKit` is the only additional Apple framework, used solely by `BundleHasher`). It compiles for iOS 17+ and macOS 14+ and runs in the host app, the Message Filter Extension, and the test target without modification.
 
 ## Pending in later increments
 
-- `AppGroupStore` + `BundleHasher` (Increment 5)
 - `CoreMLDetector`, `FoundationModelsDetector` (Increment 10)
 
 ## Hard contract
