@@ -73,6 +73,9 @@ jobs:
             Veto/ VetoFilterExtension/ Packages/VetoCore/Sources/ Packages/VetoCore/Tests/
 
       - name: No IDMessageFilterExtensionNetworkURL key declared
+        # Matches the key as it would actually appear (YAML colon-suffixed or
+        # plist <key>-wrapped) so the documentation comment in project.yml
+        # warning against adding the key is not a false positive.
         run: |
-          ! grep -rE "IDMessageFilterExtensionNetworkURL" \
+          ! grep -rE "IDMessageFilterExtensionNetworkURL[[:space:]]*:|<key>IDMessageFilterExtensionNetworkURL</key>" \
             VetoFilterExtension/ project.yml
